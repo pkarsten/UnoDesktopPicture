@@ -42,12 +42,12 @@ public partial class GraphService
     //   - for any Work or School accounts, use organizations
     //   - for any Work or School accounts, or Microsoft personal account, use common
     //   - for Microsoft Personal account, use consumers
-    private const string ClientId = "{client id}";
+    private const string ClientId = "e6a18c7b-2ab6-43a5-9157-5f042c9993ae";
 
     private const string Tenant = "common"; // Alternatively "[Enter your tenant, as obtained from the azure portal, e.g. kko365.onmicrosoft.com]"
     private const string Authority = "https://login.microsoftonline.com/" + Tenant;
 
-    private static string clientId = "{client id}";
+    private static string clientId = "e6a18c7b-2ab6-43a5-9157-5f042c9993ae";
     private static string tenantId = "common";
     // This is redirect uri you need to register in the app registration portal. The app config does not need it.
     string redirectUri = $"http://localhost";
