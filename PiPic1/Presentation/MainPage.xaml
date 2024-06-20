@@ -1,0 +1,32 @@
+﻿<Page x:Class="PiPic1.Presentation.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:PiPic1.Presentation"
+      xmlns:uen="using:Uno.Extensions.Navigation.UI"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      NavigationCacheMode="Required"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+  <Grid utu:SafeArea.Insets="VisibleBounds">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <utu:NavigationBar Content="{Binding Title}" />
+
+    <StackPanel Grid.Row="1"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Spacing="16">
+      <TextBlock Text="{Binding Message, Mode=TwoWay}"/>
+      <TextBlock Text="{Binding ImgList, Mode=TwoWay}"/>
+      <TextBox Text="{Binding Name, Mode=TwoWay}"
+          PlaceholderText="Enter your name:" />
+      <Button Content="Start BackgroundTask" Command="{Binding StartMyTask}" />
+      <Button Content="Stop BackgroundTask" Command="{Binding StopMyTask}" />
+      <Button Content="Go to Second Page"
+          AutomationProperties.AutomationId="SecondPageButton"
+          Command="{Binding GoToSecond}" />
+    </StackPanel>
+  </Grid>
+</Page>
