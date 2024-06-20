@@ -8,7 +8,7 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="msale6a18c7b-2ab6-43a5-9157-5f042c9993ae" android:host="auth" />
+        <data android:scheme="msale{clientid}" android:host="auth" />
       </intent-filter>
     </activity>
   </application>
