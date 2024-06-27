@@ -13,5 +13,6 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageVersion Include="Uno.WinUI.MSAL" Version="5.2.132" />
+    <PackageVersion Include="Uno.WinUI.Skia.Gtk" Version="5.2.132" />
   </ItemGroup>
 </Project>
