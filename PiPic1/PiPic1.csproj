@@ -44,6 +44,23 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\Images\IMG_0135.JPG" />
+    <None Remove="Controls\ClockControl.xaml" />
+    <None Remove="Controls\InfoBox.xaml" />
+    <None Remove="Presentation\DashBoard.xaml" />
+    <None Remove="Presentation\Settings.xaml" />
+    <None Remove="Styles\Button.xaml" />
+    <None Remove="Styles\Colors.xaml" />
+    <None Remove="Styles\ComboBox.xaml" />
+    <None Remove="Styles\FlipView.xaml" />
+    <None Remove="Styles\FontIcon.xaml" />
+    <None Remove="Styles\Fonts.xaml" />
+    <None Remove="Styles\GradientViews.xaml" />
+    <None Remove="Styles\ListView.xaml" />
+    <None Remove="Styles\RadioButton.xaml" />
+    <None Remove="Styles\RatingControl.xaml" />
+    <None Remove="Styles\TabView.xaml" />
+    <None Remove="Styles\TextBlock.xaml" />
+    <None Remove="Styles\TextBox.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" />
@@ -52,6 +69,60 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="sqlite-net-pcl" />
     <PackageReference Include="Uno.WinUI.MSAL" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Presentation\Settings.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\Colors.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\Button.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\ComboBox.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\FlipView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\FontIcon.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\Fonts.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\GradientViews.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\ListView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\RadioButton.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\RatingControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\TabView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\TextBlock.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\TextBox.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Presentation\DashBoard.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Remove="Presentation\DashBoard.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Controls\ClockControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Controls\InfoBox.xaml" />
   </ItemGroup>
 
 </Project>

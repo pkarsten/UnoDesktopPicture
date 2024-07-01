@@ -1,9 +1,10 @@
 namespace PiPic1.Presentation;
-
-public sealed partial class MainPage : Page
+public sealed partial class DashBoard : Page
 {
-    public MainPage()
+    public DashBoard()
     {
         this.InitializeComponent();
     }
 }
+
+

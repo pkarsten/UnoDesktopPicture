@@ -523,39 +523,6 @@ public class DAL
     }
 
 
-    public async Task<IList<TaskFolder>> GetTaskFolderFromGraph()
-    {
-
-        Exception error = null;
-        IList<TaskFolder> folders = null;
-
-        //// Initialize Graph client
-        var accessToken = await GraphService.GetTokenForUserAsync();
-        var graphService = new GraphService(accessToken);
-
-        try
-        {
-            folders = await graphService.GeTaskFolders();
-            foreach (TaskFolder f in folders)
-            {
-                System.Diagnostics.Debug.WriteLine("Name: " + f.Name + " - Id: " + f.Id);
-            }
-        }
-        catch (Exception ex)
-        {
-            error = ex;
-        }
-        finally
-        {
-            if (error != null)
-            {
-                SaveLogEntry(LogType.Error, error.Message);
-            }
-        }
-
-        return folders;
-    }
-
 
     /// <summary>
     /// Gets a List of Tasks from MS Graph in given TaskFolder

@@ -1,6 +1,6 @@
 using SQLite;
 using System;
-
+namespace PiPic1;
     public sealed class CalendarEvent
     {
         /// <summary>

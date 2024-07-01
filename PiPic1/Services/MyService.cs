@@ -1,6 +1,6 @@
 using MSGraph.Response;
 using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
+using System.Collections.ObjectModel;
 using MSGraph;
 using Microsoft.UI.Xaml.Media.Imaging;
 
@@ -125,6 +125,71 @@ public class MyService : IMyService
         return true;
     }
 
+    public async Task<IList<TaskFolder>> GetTaskFolderFromGraph()
+    {
+
+        Exception error = null;
+        IList<TaskFolder> folders = null;
+
+        //// Initialize Graph client
+        var accessToken = await GraphService.GetTokenForUserAsync();
+        var graphService = new GraphService(accessToken);
+
+        try
+        {
+            folders = await graphService.GeTaskFolders();
+            foreach (TaskFolder f in folders)
+            {
+                System.Diagnostics.Debug.WriteLine("Name: " + f.Name + " - Id: " + f.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex;
+        }
+        finally
+        {
+            if (error != null)
+            {
+                System.Diagnostics.Debug.WriteLine(LogType.Error, "Error in GetTaskFolderFromGraph " + error.Message);
+            }
+        }
+
+        return folders;
+    }
+
+    public async Task<ObservableCollection<TaskFolder>> GetTaskFolderFromGraph1()
+    {
+        Exception error = null;
+        IList<TaskFolder> folders = null;
+
+        //// Initialize Graph client
+        var accessToken = await GraphService.GetTokenForUserAsync();
+        var graphService = new GraphService(accessToken);
+
+        try
+        {
+            folders = await graphService.GeTaskFolders();
+            foreach (TaskFolder f in folders)
+            {
+                System.Diagnostics.Debug.WriteLine("Name: " + f.Name + " - Id: " + f.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex;
+        }
+        finally
+        {
+            if (error != null)
+            {
+                System.Diagnostics.Debug.WriteLine(LogType.Error, "Error in GetTaskFolderFromGraph " + error.Message);
+            }
+        }
+
+        return folders.ToObservableCollection();
+    }
+
     // The background task activity.
     //
     public async Task<DashBoardImage> StreamImageFromOneDrive()
@@ -202,8 +267,8 @@ public class MyService : IMyService
                 }
 
                 item.Viewed = true;
-                //dbi.Description = item.Description;
-                dbi.Description = item.Name + " " + DateTime.Now;
+                dbi.Description = item.Description;
+                //dbi.Description = item.Name + " " + DateTime.Now;
                 await DAL.AppDataBase.SavePicture(item);
             }
             dbi.Photo = bitmapimage;
@@ -220,5 +285,16 @@ public class MyService : IMyService
             DAL.AppDataBase.CheckForViewedPictures();
         }
 
+    }
+
+    public async Task SimulateBackWord()
+    {
+        int _progress = 0;
+        for (int i = 0; i < 100; i++)
+        {
+            _progress = i;
+            Thread.Sleep(1000);
+            System.Diagnostics.Debug.WriteLine("Progress in Back Worker " + _progress);
+        }
     }
 }

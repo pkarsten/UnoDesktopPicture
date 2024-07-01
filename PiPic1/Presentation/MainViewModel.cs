@@ -50,6 +50,7 @@ public partial class MainViewModel : ObservableObject
         MessageService = myservice;
         Title = "Main";
         GoToSecond = new AsyncRelayCommand(GoToSecondView);
+        GoToSettings = new AsyncRelayCommand(GoToSettingsView);
         StartMyTask = new AsyncRelayCommand(StartBackgroundTask);
         StopMyTask = new AsyncRelayCommand(CancelBackgroundTask);
         SetupDatabase();
@@ -60,6 +61,7 @@ public partial class MainViewModel : ObservableObject
     public string? MyToken { get; private set; }
 
     public ICommand GoToSecond { get; }
+    public ICommand GoToSettings { get; }
     public ICommand StartMyTask { get; }
     public ICommand StopMyTask { get; }
 
@@ -96,6 +98,11 @@ public partial class MainViewModel : ObservableObject
     private async Task GoToSecondView()
     {
         await _navigator.NavigateViewModelAsync<SecondViewModel>(this, data: new PiPic1.Models.Entity(Name!));
+    }
+
+    private async Task GoToSettingsView()
+    {
+        _ = _navigator.NavigateViewModelAsync<SettingsViewModel>(this);
     }
 
     private void SetupDatabase()

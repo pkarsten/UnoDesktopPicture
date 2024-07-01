@@ -1,0 +1,116 @@
+﻿<Page x:Class="PiPic1.Presentation.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:PiPic1.Presentation"
+      xmlns:local1="using:PiPic1"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:uen="using:Uno.Extensions.Navigation.UI"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+  <Page.Resources>
+    <local1:NullableBooleanToBooleanConverter x:Key="NullableBooleanToBooleanConverter" />
+    <local1:ComboBoxTaskFolderItemConvert x:Key="ComboBoxTaskFolderItemConvert"/>
+    <local1:ComboBoxTaskResponseItemConvert x:Key="ComboBoxTaskResponseItemConvert"/>
+    <local1:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
+    <local1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+    <Style x:Key="ButtonStyle"
+               TargetType="Button">
+      <Setter Property="Height"
+                    Value="30" />
+      <Setter Property="Margin"
+                    Value="0,16,0,0" />
+      <Setter Property="HorizontalAlignment"
+                    Value="Stretch" />
+      <Setter Property="VerticalAlignment"
+                    Value="Stretch" />
+    </Style>
+
+    <Style x:Key="TextBoxStyle"
+               TargetType="TextBox">
+      <Setter Property="Margin"
+                    Value="0,0,0,-10" />
+    </Style>
+  </Page.Resources>
+  <ScrollViewer HorizontalScrollMode="Enabled" VerticalScrollMode="Enabled">
+    <Grid utu:SafeArea.Insets="VisibleBounds">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+      <StackPanel Grid.Row="1"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center">
+        <TextBlock Text="One Drive Connect" FontSize="20" FontFamily="Segoe UI"></TextBlock>
+        <TextBlock Text="{Binding MyUsername, Mode=TwoWay}" Margin="0,0,0,0" FontFamily="Segoe UI"></TextBlock>
+        <Button x:Name="loginButton"
+                Content="{Binding LogInLogOutBtnText}"
+                Style="{StaticResource ButtonStyle}" 
+                Command="{Binding LogInLogOut}"/>
+        <TextBlock Text="Picture Show" FontSize="20" FontFamily="Segoe UI"></TextBlock>
+        <TextBlock Text="Picturefolder for DiaShow:" Margin="0,0,0,0" FontFamily="Segoe UI"></TextBlock>
+        <TextBox x:Name="OneDriveFolderPathText"
+               PlaceholderText="Enter a OneDrive path with leading '/' e.g. Bilder/WindowsIotAppPics"
+               Style="{StaticResource TextBoxStyle}"
+               Text="{Binding SetupSettings.OneDrivePictureFolder, Mode=TwoWay}" />
+        <Button Content="Load Images From Path now"
+          x:Name="PicTaskRunNowButton"
+          Style="{StaticResource ButtonStyle}" 
+          Command="{Binding LoadPicsCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBooleanConverter},  Mode=TwoWay}"/>
+        <TextBlock FontSize="12" Foreground="Black" Text="{Binding TaskResult,Mode=OneWay}"/>
+        <TextBlock FontSize="12" Foreground="Black" Text="{Binding TaskProgressString,Mode=OneWay}"/>
+        <TextBlock Text="Choose Task Folder:" Margin="0,0,0,0"></TextBlock>
+        <TextBlock Text="Interval (min. 10 Seconds) for Diashow:" Margin="0,0,0,0"></TextBlock>
+        <TextBox x:Name="DiaShowInterval" Text="{Binding SetupSettings.IntervalForDiashow, Mode=TwoWay}"
+PlaceholderText="10"
+Style="{StaticResource TextBoxStyle}"  Margin="0,0,0,0"/>
+        <CheckBox IsChecked="{Binding SetupSettings.EnablePictureAddOn, Converter={StaticResource NullableBooleanToBooleanConverter}, Mode=TwoWay}">Enable Picture Show</CheckBox>
+        <TextBlock Text="Tasks" FontSize="20" FontFamily="Segoe UI" Margin="0,10,0,0"/>
+        <TextBlock Text="Choose Task Folder:" Margin="0,0,0,0"></TextBlock>
+        <ComboBox x:Name="cmbTaskFolders" 
+ItemsSource="{Binding MyOutlookTaskFolders, Mode=OneWay}"
+SelectedValuePath="Id" 
+SelectedItem="{Binding SelectedTaskFolder, Mode=TwoWay, Converter={StaticResource ComboBoxTaskFolderItemConvert}}"
+DisplayMemberPath="Name"
+HorizontalAlignment="Stretch"
+></ComboBox>
+        <CheckBox IsChecked="{Binding SetupSettings.EnablePurchaseTask, Converter={StaticResource NullableBooleanToBooleanConverter}, Mode=TwoWay}">Show Tasks from Folder on  Dashboard</CheckBox>
+        <TextBlock Text="Calendar"  Margin="0,10,0,0" FontSize="20" FontFamily="Segoe UI"></TextBlock>
+        <TextBlock Text="Show Next Events for x Days:" Margin="0,0,0,0"></TextBlock>
+        <TextBox x:Name="CalendarNextEventsInterval"
+    Text="{Binding SetupSettings.NextEventDays, Mode=TwoWay}"
+PlaceholderText="10"
+Style="{StaticResource TextBoxStyle}"  Margin="0,0,0,0"/>
+        <CheckBox IsChecked="{Binding  SetupSettings.EnableCalendarAddon, Converter={StaticResource NullableBooleanToBooleanConverter}, Mode=TwoWay}">Show Calendar Events on Dashboard</CheckBox>
+        <CheckBox IsChecked="{Binding  SetupSettings.EnableCalendarNextEvents, Converter={StaticResource NullableBooleanToBooleanConverter}, Mode=TwoWay}">Show Next Events on Dashboard</CheckBox>
+        <CheckBox IsChecked="{Binding  SetupSettings.EnableTodayEvents, Converter={StaticResource NullableBooleanToBooleanConverter}, Mode=TwoWay}">Show Today  Events on Dashboard</CheckBox>
+        <TextBlock Text="UTC Offset in Hours (e.g. +2,-2):" Margin="0,0,0,0"></TextBlock>
+        <TextBox x:Name="EventOffset" Text="{Binding SetupSettings.EventsOffset, Mode=TwoWay}"
+PlaceholderText="+2"
+Style="{StaticResource TextBoxStyle}"  Margin="0,0,0,0"/>
+        <TextBlock Text="Clock"  Margin="0,10,0,0" FontSize="20" FontFamily="Segoe UI"></TextBlock>
+        <CheckBox IsChecked="{Binding SetupSettings.EnableClock, Converter={StaticResource NullableBooleanToBooleanConverter}, Mode=TwoWay}">Show Clock on Dashboard?</CheckBox>
+        <TextBlock Text="Background Tasks"  Margin="0,10,0,0" FontSize="20" FontFamily="Segoe UI" Height="27"></TextBlock>
+        <TextBlock Text="Time Interval for Load Picture List from OneDrive (min. 15 minutes)" Margin="0,10,0,0"></TextBlock>
+        <TextBox x:Name="LoadPicturesInterval" Text="{Binding SetupSettings.IntervalForLoadPictures, Mode=TwoWay}"
+PlaceholderText="15"
+Style="{StaticResource TextBoxStyle}"  Margin="0,0,0,0"/>
+        <TextBlock Text="Time Interval for Update Calendar and Tasks (min. 15 minutes)" Margin="0,0,0,0"></TextBlock>
+        <TextBox Text="{Binding SetupSettings.IntervalForLoadCalendarAndTasksInterval, Mode=TwoWay}"
+PlaceholderText="15"
+Style="{StaticResource TextBoxStyle}"  Margin="0,0,0,0"/>
+        <StackPanel Padding="5">
+            <Button x:Name="applysettingsBtn"
+                    Padding="10"
+                    Margin="0,5"
+                    Content="Apply Settings"
+                    Command="{Binding Submit}"
+                    IsEnabled="{Binding CanExecute, Mode=TwoWay}"/>
+            <Button Content="Go to Dashboard" Command="{Binding GoToDashBoardPage}" />
+          </StackPanel>
+      </StackPanel>
+
+    </Grid>
+    </ScrollViewer>
+</Page>

@@ -24,9 +24,8 @@
           PlaceholderText="Enter your name:" />
       <Button Content="Start BackgroundTask" Command="{Binding StartMyTask}" />
       <Button Content="Stop BackgroundTask" Command="{Binding StopMyTask}" />
-      <Button Content="Go to Second Page"
-          AutomationProperties.AutomationId="SecondPageButton"
-          Command="{Binding GoToSecond}" />
+      <Button Content="Go to Second Page" AutomationProperties.AutomationId="SecondPageButton" Command="{Binding GoToSecond}" />
+      <Button Content="Go to Settings  Page" AutomationProperties.AutomationId="GoToSettingsButton" Command="{Binding GoToSettings}" />
     </StackPanel>
   </Grid>
 </Page>

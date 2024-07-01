@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PiPic1.Models;
+namespace PiPic1;
 public sealed class ToDoTask
     {
         /// <summary>

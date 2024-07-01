@@ -1,5 +1,6 @@
 using PiPic1.Services;
 using Uno.Resizetizer;
+using Microsoft.UI.Dispatching;
 
 namespace PiPic1;
 
@@ -15,8 +16,10 @@ public partial class App : Application
     }
 
     public static object AuthenticationUiParent { get; set; }
+
+    public DispatcherQueue DispatcherQueue { get; } = DispatcherQueue.GetForCurrentThread();
     protected Window? MainWindow { get; private set; }
-    protected IHost? Host { get; private set; }
+    public IHost? Host { get; private set; }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
@@ -63,6 +66,7 @@ public partial class App : Application
                     // TODO: Register your services
                     services.AddSingleton<IMyService, MyService>();
                     services.AddSingleton<ILoadImagesServices, LoadImagesService>();
+                    services.AddSingleton<LoadImagesBackgroundworker> ();
                 })
                 .UseNavigation(RegisterRoutes)
             );
@@ -81,6 +85,8 @@ public partial class App : Application
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<MainPage, MainViewModel>(),
+            new ViewMap<SettingsPage, SettingsViewModel>(),
+            new ViewMap<DashBoard, DashBoardViewModel>(),
             new DataViewMap<SecondPage, SecondViewModel, Entity>()
         );
 
@@ -90,6 +96,8 @@ public partial class App : Application
                 [
                     new ("Main", View: views.FindByViewModel<MainViewModel>()),
                     new ("Second", View: views.FindByViewModel<SecondViewModel>()),
+                    new ("Settings", View: views.FindByViewModel<SettingsViewModel>()),
+                    new ("DashBoard", View: views.FindByViewModel<DashBoardViewModel>())
                 ]
             )
         );
