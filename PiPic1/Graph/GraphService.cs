@@ -127,10 +127,10 @@ public partial class GraphService
     public static async Task<AuthenticationResult> GetAuthResult()
     {
 
-        //IEnumerable<IAccount> accounts = await PublicClientApp.GetAccountsAsync();
-        //IAccount firstAccount = accounts.FirstOrDefault();
-        //return await PublicClientApp.AcquireTokenSilent(Scopes, firstAccount).ExecuteAsync();
-        return authResult;
+        IEnumerable<IAccount> accounts = await PublicClientApp.GetAccountsAsync();
+        IAccount firstAccount = accounts.FirstOrDefault();
+        return await PublicClientApp.AcquireTokenSilent(Scopes, firstAccount).ExecuteAsync();
+        //return authResult;
     }
 
     /// <summary>
@@ -157,18 +157,7 @@ public partial class GraphService
     /// <returns> Access Token</returns>
     public static async Task<AuthenticationResult> SignInUserAndGetTokenUsingMSAL()
     {
-        // returns smth like S-1-15-2-2601115387-131721061-1180486061-1362788748-631273777-3164314714-2766189824
-        //string sid = Windows.Security.Authentication.Web.WebAuthenticationBroker.GetCurrentApplicationCallbackUri().Host.ToUpper();
 
-        // This is redirect uri you need to register in the app registration portal. The app config does not need it.
-        //string redirectUri = $"http://localhost";//"https://login.microsoftonline.com/common/oauth2/nativeclient";// $"ms-appx-web://microsoft.aad.brokerplugin/{sid}";
-
-        // Initialize the MSAL library by building a public client application
-        //PublicClientApp = PublicClientApplicationBuilder.Create(ClientId).WithAuthority(AzureCloudInstance.AzurePublic, Tenant).WithUnoHelpers().Build();
-        //PublicClientApp = PublicClientApplicationBuilder.Create(ClientId)
-        //                                    .WithRedirectUri(redirectUri)
-        //                                    .WithUnoHelpers()
-        //                                    .Build();
 
         _currentUserAccount = _currentUserAccount ?? (await PublicClientApp.GetAccountsAsync()).FirstOrDefault();
 

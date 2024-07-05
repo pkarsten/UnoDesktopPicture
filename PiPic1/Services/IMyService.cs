@@ -13,4 +13,6 @@ public interface IMyService
 
     Task<IList<TaskFolder>> GetTaskFolderFromGraph();
     Task<ObservableCollection<TaskFolder>> GetTaskFolderFromGraph1();
+    
+    Task LoadCalendarEventsAndTasks();
 }

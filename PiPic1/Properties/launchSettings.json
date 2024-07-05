@@ -12,7 +12,7 @@
       "commandName": "Project",
       "compatibleTargetFramework": "desktop",
       "remoteDebugEnabled": false,
-      "remoteDebugMachine": "192.168.20.11",
+      "remoteDebugMachine": "192.168.20.194",
       "authenticationMode": "None",
       "nativeDebugging": true,
       "jsWebView2Debugging": true

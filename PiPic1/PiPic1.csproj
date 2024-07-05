@@ -43,10 +43,12 @@
     <Configurations>Debug;Release;test</Configurations>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\Icons\icon_foreground.svg" />
+    <None Remove="Assets\Icons\settings.svg" />
     <None Remove="Assets\Images\IMG_0135.JPG" />
     <None Remove="Controls\ClockControl.xaml" />
     <None Remove="Controls\InfoBox.xaml" />
-    <None Remove="Presentation\DashBoard.xaml" />
+    <None Remove="Presentation\KioskPage.xaml" />
     <None Remove="Presentation\Settings.xaml" />
     <None Remove="Styles\Button.xaml" />
     <None Remove="Styles\Colors.xaml" />
@@ -113,16 +115,45 @@
     <UpToDateCheckInput Remove="Styles\TextBox.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <UpToDateCheckInput Remove="Presentation\DashBoard.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Remove="Presentation\DashBoard.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <UpToDateCheckInput Remove="Controls\ClockControl.xaml" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Controls\InfoBox.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Presentation\KioskPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Remove="Presentation\KioskPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\Icons\settings.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <UnoImage Update="Assets\Icons\settings.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </UnoImage>
+  </ItemGroup>
+  <ItemGroup>
+    <UnoImage Remove="Assets\Icons\settings.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Icons\icon_foreground.svg" />
   </ItemGroup>
 
 </Project>

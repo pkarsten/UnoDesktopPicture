@@ -82,4 +82,19 @@
         <Setter Property="Foreground" Value="{ThemeResource Red}" />
     </Style>
 
+  <!--A Style that affects all TextBlocks-->
+  <Style TargetType="TextBlock">
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <!--A Style that extends the previous TextBlock Style with an x:Key of EventsText-->
+  <Style TargetType="TextBlock" x:Key="EventsText">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontFamily" Value="{StaticResource SegoeUI}"/>
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="LineHeight" Value="0"/>
+  </Style>
+
 </ResourceDictionary>

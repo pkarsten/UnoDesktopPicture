@@ -9,6 +9,7 @@ using MSGraph.Response;
 using MSGraph;
 using static System.Net.Mime.MediaTypeNames;
 using System.Collections.ObjectModel;
+using Microsoft.UI.Windowing;
 
 namespace PiPic1.Presentation;
 
@@ -90,7 +91,14 @@ public partial class SettingsViewModel : ObservableObject
     public bool IsSignedIn
     {
         get => _isSignedIn;
-        set => SetProperty(ref _isSignedIn, value);
+        set { 
+            SetProperty(ref _isSignedIn, value);
+            switch (_isSignedIn)
+            {
+                case true: _liginlogoutbtntxt = "Sign Out";break;
+                case false: _liginlogoutbtntxt = "Sign In";break;
+            }
+        }
     }
 
     private string? _myUsername;
@@ -103,14 +111,8 @@ public partial class SettingsViewModel : ObservableObject
     private string _liginlogoutbtntxt;
     public string LogInLogOutBtnText
     {
-        get 
-        {
-            switch (_isSignedIn)
-            {
-                case true: return "Sign Out";
-                case false: return "Sign In";
-            }
-        }
+        get => _liginlogoutbtntxt;
+
         set => SetProperty(ref _liginlogoutbtntxt, value);
     }
     private string _myToken;
@@ -122,6 +124,16 @@ public partial class SettingsViewModel : ObservableObject
 
     public SettingsViewModel(INavigator navigator, IMyService myservice, LoadImagesBackgroundworker backgroundWorkerService)
     {
+        var dispatcherQueue = (App.Current as App).DispatcherQueue;
+        if (dispatcherQueue == null)
+        {
+            throw new InvalidOperationException("DispatcherQueue is null. Ensure this method is called from the UI thread.");
+        }
+        dispatcherQueue.TryEnqueue(() =>
+        {
+
+            App.MainWindow.AppWindow.SetPresenter(AppWindowPresenterKind.Default);
+        });
         _navigator = navigator;
         MyService = myservice;
         LoadPicsCommand = new AsyncRelayCommand(OnLoadPics);
@@ -141,6 +153,7 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public async Task LoadData()
     {
+       
         AppConstants.LoadPictureListManually = false;
         _canExecute = false;
         IsBusy = true;
@@ -249,9 +262,16 @@ public partial class SettingsViewModel : ObservableObject
     {
         switch (_isSignedIn)
         {
-            case true: await LogOut(); break;
-            case false: await LogIn(); break;
+            case true: 
+                await LogOut();
+
+                break;
+            case false: 
+                await LogIn();
+                break;
         }
+
+        UpdateUI();
     }
    
     public async Task LogOut()
@@ -259,6 +279,7 @@ public partial class SettingsViewModel : ObservableObject
         await GraphService.SignOut();
         _myUsername = "";
         _isSignedIn = false;
+        _liginlogoutbtntxt = "Sign In";
         UpdateUI();
     }
 
@@ -278,6 +299,7 @@ Android.Util.Log.Debug("YourAppName", "Access Token " + mytoken);
             System.Diagnostics.Debug.WriteLine("Access Token " + myAuthResult.Account.Username);
             _myUsername = myAuthResult.Account.Username;
             _isSignedIn = true;
+            _liginlogoutbtntxt = "Sign Out";
         }
 
         catch (Exception ex)
@@ -296,8 +318,9 @@ Android.Util.Log.Debug("YourAppName", "Access Token " + mytoken);
 
     private async Task OnNavigateToDashBoardPage()
     {
-        //_ = _navigator.NavigateViewModelAsync<MainViewModel>(this);
-        _ = _navigator.NavigateViewModelAsync<DashBoardViewModel>(this);
+        //await _navigator.NavigateRouteForResultAsync(this,"Kiosk","");
+        //_ = _navigator.NavigateViewModelAsync<KioskViewModel>(this);
+        await _navigator.NavigateViewModelAsync<KioskViewModel>(this, Qualifiers.ClearBackStack);
     }
 
     private async void UpdateUI()

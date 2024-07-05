@@ -15,6 +15,7 @@ public class ShellViewModel
     {
         //await _navigator.NavigateViewModelAsync<MainViewModel>(this);
         //await _navigator.NavigateViewModelAsync<SettingsViewModel>(this);
-        await _navigator.NavigateViewModelAsync<DashBoardViewModel>(this);
+        await _navigator.NavigateViewModelAsync<KioskViewModel>(this, Qualifiers.ClearBackStack);
+        //await _navigator.NavigateViewModelAsync<SettingsViewModel>(this, Qualifiers.ClearBackStack);
     }
 }

@@ -3,12 +3,8 @@ using MSGraph.Response;
 using System.ComponentModel;
 using System.Timers;
 
-
 namespace PiPic1.Services;
-
-public sealed class LoadImagesBackgroundworker
-
-
+public sealed class LoadGraphDataBackgroundworker
 {
     #region Fields
     private readonly System.Timers.Timer _timer;
@@ -28,7 +24,7 @@ public sealed class LoadImagesBackgroundworker
     #endregion
 
     #region Constructor
-    public LoadImagesBackgroundworker()
+    public LoadGraphDataBackgroundworker()
     {
         // Initialize BackgroundWorker
         _backgroundWorker = new BackgroundWorker
@@ -42,7 +38,8 @@ public sealed class LoadImagesBackgroundworker
 
         // Initialize Timer
         //_timer = new Timer(5000); // Set interval to 5 seconds
-        _timer = new System.Timers.Timer(5000); // Set interval to 1 seconds
+        //TODO:PK Get Interval from Database
+        _timer = new System.Timers.Timer(60000); // Set interval to 1 seconds
         _timer.Elapsed += Timer_Elapsed;
     }
     #endregion
@@ -108,7 +105,7 @@ public sealed class LoadImagesBackgroundworker
             StatusUpdated?.Invoke(this, _progress.ToString());
             System.Diagnostics.Debug.WriteLine("Progress in Back Worker " + _progress);
         }*/
-        await LoadImageListFromOneDrive();
+        await LoadCalendarEventsAndTasks();
     }
 
     private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -138,17 +135,13 @@ public sealed class LoadImagesBackgroundworker
     //
     // The background task activity.
     //
-    private async Task LoadImageListFromOneDrive()
+    private async Task LoadCalendarEventsAndTasks()
     {
         if ((_cancelRequested == false) && (_progress < 100))
         {
         }
         try
         {
-            Exception error = null;
-            ItemInfoResponse folder = null;
-            IList<ItemInfoResponse> children = null;
-
             //// Initialize Graph client
             var accessToken = await GraphService.GetTokenForUserAsync();
             var graphService = new GraphService(accessToken);
@@ -156,89 +149,83 @@ public sealed class LoadImagesBackgroundworker
             try
             {
                 var s = await DAL.AppDataBase.GetSetup();
-                folder = await graphService.GetPhotosAndImagesFromFolder(s.OneDrivePictureFolder);
-                children = await graphService.PopulateChildren(folder);
-
-                if (children != null)
+                if (s.EnableCalendarAddon)
                 {
+                    await DAL.AppDataBase.DeleteAllCalendarEvents();
+                    //
+                    // Graphservice for get Calendar Events
+                    //
 
-                    try
+                    if (s.EnableCalendarNextEvents)
                     {
-
-                        //https://gunnarpeipman.com/csharp/foreach/
-                        ///TODO: Null Exception here when Children is null 
-                        int xyz = 0;
-                        foreach (ItemInfoResponse iir in children.ToList())
+                        IList<CalendarEventItem> nextevents = await graphService.GetCalendarEvents(s.NextEventDays);
+                        foreach (var o in nextevents)
                         {
-                            if (iir.Image != null)
-                            {
-                                //System.Diagnostics.Debug.WriteLine("PhotoName : " +xyz+ " - "  + iir.Name + "Id: " + iir.Id);
-                                xyz += 1;
-                                //iri = iir;
-                            }
+                            var ce = new CalendarEvent();
+                            //TODO: It seems that sqliteDB all the time saves datetime  as UTC , 
+                            //Perhaps add language localisation settings ? 
+                            // no way to save it to localtime or other Format? So add here 4 Houts for my timezone 
+                            //Winter Time in Düsseldorf Add 1, Summer Time Add 2 , or viceversa? 
+                            ce.StartDateTime = o.StartDateTime.dateTime.AddHours(s.EventsOffset);
+                            //TODO: Summertime ? Get here UTC Date ? TODO: Time zone in setup choose? 
+                            ce.Subject = o.Subject;
+                            if (ce.StartDateTime.Day == DateTime.UtcNow.Day)
+                                ce.TodayEvent = true;
                             else
+                                ce.TodayEvent = false;
+
+                            ce.IsAllDay = o.IsAllDay;
+
+                            // TODO: more test for this here, perhaps there are Events that we would see , then don't ignore them 
+                            // Problem is when StartTime is between 0:00-02:00 , example: exists an IsAllDay Event on 10.04.19 LocalTime (Begins 0:00, Ends at 11.04.19 0:00)
+                            // when the day changes (Localtime) on 0:00 Uhr, then it will list this event as Today Event (because it ends on 11.04) ...
+                            if (ce.StartDateTime.Day + 1 == DateTime.UtcNow.Day)
                             {
-                                children.Remove(iir);
+                                if (ce.IsAllDay)
+                                {
+                                    ce.IgnoreEvent = true;
+                                }
                             }
+
+                            //ce.StartDateTime.ToLocalTime();
+                            //string us = String.Format("{0:yyyy-MM-ddTHH:mm:ss}", o.StartDateTime.dateTime);
+                            //System.Diagnostics.Debug.WriteLine("UTC Time: " + us + " " + o.Subject);
+                            //DateTime locDT = o.StartDateTime.dateTime.ToLocalTime();
+                            //string strutcStart = String.Format("{0:yyyy-MM-ddTHH:mm:ss}", locDT);
+                            //System.Diagnostics.Debug.WriteLine("Loc Time: " + strutcStart + " " + o.Subject);
+                            //ce.StartDateTime = new DateTime(locDT.Year,locDT.Month,locDT.Day, locDT.Hour,locDT.Minute,locDT.Second);
+                            //ce.StartDateTime = new DateTime(2019, 4, 16, 22, 22, 22);
+
+                            await DAL.AppDataBase.SaveCalendarEvent(ce);
                         }
-                        xyz = 0;
-                        int totalFiles = children.Count;
-                        int filesProcessed = 0;
-                        //                            await HelloWindowsIotDataBase.DeleteAllPictures();
-                        foreach (var iri in children)
+                    }
+
+                }
+
+                if (s.EnablePurchaseTask)
+                {
+                    await DAL.AppDataBase.DeleteToDoTask();
+                    //Graph Service for get Tasks
+                    var mypurchtask = await graphService.GetTasksFromToDoTaskList(s.ToDoTaskListID);
+
+                    if (mypurchtask != null)
+                    {
+                        foreach (TaskResponse p in mypurchtask)
                         {
-                            if (iri.Image != null)
-                            {
-
-                                filesProcessed++;
-                                _progress = (int)((double)filesProcessed / totalFiles * 100);
-                                StatusUpdated?.Invoke(this, _progress.ToString());
-                                var dbPic = DAL.AppDataBase.GetPictureByOneDriveId(iri.Id);
-                                if (dbPic == null)
-                                {
-                                    var fp = new FavoritePic();
-                                    fp.DownloadedFromOneDrive = true;
-                                    fp.Viewed = false;
-                                    fp.Name = iri.Name;
-                                    fp.DownloadUrl = iri.DownloadUrl;
-                                    fp.Name = iri.Name;
-                                    fp.Description = iri.Description;
-                                    fp.OneDriveId = iri.Id;
-                                    fp.Status = "UpToDate";
-                                    System.Diagnostics.Debug.WriteLine("New Pic in DB : " + xyz + " - " + iri.Name + "Id: " + iri.Id);
-                                    await DAL.AppDataBase.SavePicture(fp);
-                                }
-                                else
-                                {
-                                    var fp = dbPic;
-                                    fp.Status = "UpToDate";
-                                    fp.Description = iri.Description;
-                                    System.Diagnostics.Debug.WriteLine("Pic Update in DB PhotoName : " + xyz + " - " + iri.Name + "Id: " + iri.Id + "Desc: " + iri.Description);
-                                    await DAL.AppDataBase.SavePicture(fp);
-                                }
-                                xyz += 1;
-
-                            }
-
+                            var pt = new ToDoTask();
+                            pt.Subject = p.Subject;
+                            pt.BodyText = p.TaskBody.Content;
+                            await DAL.AppDataBase.SaveToDoTask(pt);
                         }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine("Exception in LoadImageListFromOneDrive: " + ex.Message);
-                        await DAL.AppDataBase.SaveLogEntry(LogType.Error, ex.Message);
-                    }
-                    finally
-                    {
-                        DAL.AppDataBase.DelIndefinablePics();
                     }
                 }
             }
             catch (Exception ex)
             {
-                error = ex;
+                await DAL.AppDataBase.SaveLogEntry(LogType.Error, "Exception  in LoadImageListFromOneDrive() " + ex.Message);
             }
             _progress = 100;
+            StatusUpdated?.Invoke(this, _progress.ToString());
         }
         catch (Exception ex)
         {
@@ -246,7 +233,6 @@ public sealed class LoadImagesBackgroundworker
         }
         finally
         {
-
         }
     }
     #endregion

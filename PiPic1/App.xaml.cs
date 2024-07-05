@@ -1,6 +1,7 @@
 using PiPic1.Services;
 using Uno.Resizetizer;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Windowing;
 
 namespace PiPic1;
 
@@ -18,7 +19,7 @@ public partial class App : Application
     public static object AuthenticationUiParent { get; set; }
 
     public DispatcherQueue DispatcherQueue { get; } = DispatcherQueue.GetForCurrentThread();
-    protected Window? MainWindow { get; private set; }
+    public static Window? MainWindow { get; private set; }
     public IHost? Host { get; private set; }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
@@ -67,6 +68,8 @@ public partial class App : Application
                     services.AddSingleton<IMyService, MyService>();
                     services.AddSingleton<ILoadImagesServices, LoadImagesService>();
                     services.AddSingleton<LoadImagesBackgroundworker> ();
+                    services.AddSingleton<LoadGraphDataBackgroundworker>();
+                    services.AddTransient<KioskViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
             );
@@ -76,6 +79,9 @@ public partial class App : Application
         MainWindow.EnableHotReload();
 #endif
         MainWindow.SetWindowIcon();
+       
+        MainWindow.AppWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
+
 
         Host = await builder.NavigateAsync<Shell>();
     }
@@ -86,7 +92,7 @@ public partial class App : Application
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<MainPage, MainViewModel>(),
             new ViewMap<SettingsPage, SettingsViewModel>(),
-            new ViewMap<DashBoard, DashBoardViewModel>(),
+            new ViewMap<KioskPage, KioskViewModel>(),
             new DataViewMap<SecondPage, SecondViewModel, Entity>()
         );
 
@@ -97,7 +103,7 @@ public partial class App : Application
                     new ("Main", View: views.FindByViewModel<MainViewModel>()),
                     new ("Second", View: views.FindByViewModel<SecondViewModel>()),
                     new ("Settings", View: views.FindByViewModel<SettingsViewModel>()),
-                    new ("DashBoard", View: views.FindByViewModel<DashBoardViewModel>())
+                    new ("Kiosk", View: views.FindByViewModel<KioskViewModel>())
                 ]
             )
         );

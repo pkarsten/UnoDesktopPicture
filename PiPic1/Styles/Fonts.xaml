@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
-    <FontFamily x:Key="Montserrat-Bold">ms-appx:///Assests/Fonts/Montserrat-Bold.ttf</FontFamily>
-    <FontFamily x:Key="Montserrat-SemiBold">ms-appx:///Assests/Fonts/Montserrat-SemiBold.ttf</FontFamily>
-    <FontFamily x:Key="Montserrat-Medium">ms-appx:///Assests/Fonts/Montserrat-Medium.ttf</FontFamily>
-    <FontFamily x:Key="Montserrat-Regular">ms-appx:///Assests/Fonts/Montserrat-Regular.ttf</FontFamily>
+    <FontFamily x:Key="SegoeUI">ms-appx:///Assests/Fonts/SegoeUI.ttf</FontFamily>
+    <FontFamily x:Key="SegoeUIBold">ms-appx:///Assests/Fonts/SegoeUIBold.ttf</FontFamily>
+    <FontFamily x:Key="SegoeUIItalic">ms-appx:///Assests/Fonts/SegoeUIItalic.ttf</FontFamily>
+    <FontFamily x:Key="SegoeUIBoldItalic">ms-appx:///Assests/Fonts/SegoeUIBoldItalic.ttf</FontFamily>
+    <FontFamily x:Key="SegMDL2">ms-appx:///Assests/Fonts/SegMDL2.ttf</FontFamily>
 </ResourceDictionary>
