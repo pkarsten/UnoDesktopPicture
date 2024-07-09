@@ -29,8 +29,7 @@ public class MyService : IMyService
             try
             {
                 var s = await DAL.AppDataBase.GetSetup();
-                //TODO: folder = await graphService.GetPhotosAndImagesFromFolder(s.OneDrivePictureFolder);
-                folder = await graphService.GetPhotosAndImagesFromFolder("/Familienbereich/Bilder");
+                folder = await graphService.GetPhotosAndImagesFromFolder(s.OneDrivePictureFolder);
                 children = await graphService.PopulateChildren(folder);
 
                 if (children != null)
@@ -156,38 +155,6 @@ public class MyService : IMyService
         }
 
         return folders;
-    }
-
-    public async Task<ObservableCollection<TaskFolder>> GetTaskFolderFromGraph1()
-    {
-        Exception error = null;
-        IList<TaskFolder> folders = null;
-
-        //// Initialize Graph client
-        var accessToken = await GraphService.GetTokenForUserAsync();
-        var graphService = new GraphService(accessToken);
-
-        try
-        {
-            folders = await graphService.GeTaskFolders();
-            foreach (TaskFolder f in folders)
-            {
-                System.Diagnostics.Debug.WriteLine("Name: " + f.Name + " - Id: " + f.Id);
-            }
-        }
-        catch (Exception ex)
-        {
-            error = ex;
-        }
-        finally
-        {
-            if (error != null)
-            {
-                System.Diagnostics.Debug.WriteLine(LogType.Error, "Error in GetTaskFolderFromGraph " + error.Message);
-            }
-        }
-
-        return folders.ToObservableCollection();
     }
 
     // The background task activity.

@@ -26,7 +26,7 @@ public static class AppConstants
         {
             Id = 1,
             EnableLogging = false,
-            IntervalForDiashow = 10,
+            IntervalForDiashow = 5,
             IntervalForLoadPictures = 60,
             IntervalForLoadCalendarAndTasksInterval = 15,
             EnableCalendarAddon = false,
@@ -90,17 +90,26 @@ public static class AppConstants
         System.Diagnostics.Debug.WriteLine("Win DB " + filePath);
         return filePath;
         }
-        public static string SaveFileInAndroid()
+        
+    public static string SaveFileInAndroid()
         {
-
 #if __ANDROID__
             var context = Android.App.Application.Context;
-            var path = context.GetExternalFilesDir(null).AbsolutePath;
+            var filesDir = context.FilesDir;
+            var basePath = AppContext.BaseDirectory;   
+            var path ="";
+            if (filesDir == null)
+            {
+                throw new InvalidOperationException("Internal storage directory is not available.");
+            } else {
+                path = filesDir.AbsolutePath; //context.GetExternalFilesDir(null).AbsolutePath;
+            }
             var filePath = Path.Combine(path, AppConstants.DatabaseName);
             System.Diagnostics.Debug.WriteLine("Android  DB" + filePath);
             return filePath;
 #else
-        return null;
+        var filePath = "";
+        return filePath;
 #endif
         }
 

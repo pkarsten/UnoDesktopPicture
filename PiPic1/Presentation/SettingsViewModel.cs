@@ -311,15 +311,20 @@ Android.Util.Log.Debug("YourAppName", "Access Token " + mytoken);
     }
     #endregion
 
-    private async Task OnNavigateBack()
-    {
-        _ = _navigator?.NavigateBackAsync(this);
-    }
-
     private async Task OnNavigateToDashBoardPage()
     {
         //await _navigator.NavigateRouteForResultAsync(this,"Kiosk","");
         //_ = _navigator.NavigateViewModelAsync<KioskViewModel>(this);
+        var dispatcherQueue = (App.Current as App).DispatcherQueue;
+        if (dispatcherQueue == null)
+        {
+            throw new InvalidOperationException("DispatcherQueue is null. Ensure this method is called from the UI thread.");
+        }
+        dispatcherQueue.TryEnqueue(() =>
+        {
+
+            App.MainWindow.AppWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
+        });
         await _navigator.NavigateViewModelAsync<KioskViewModel>(this, Qualifiers.ClearBackStack);
     }
 

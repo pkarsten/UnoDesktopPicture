@@ -16,7 +16,7 @@ public partial class App : Application
         this.InitializeComponent();
     }
 
-    public static object AuthenticationUiParent { get; set; }
+    public static object? AuthenticationUiParent { get; set; }
 
     public DispatcherQueue DispatcherQueue { get; } = DispatcherQueue.GetForCurrentThread();
     public static Window? MainWindow { get; private set; }
@@ -66,7 +66,6 @@ public partial class App : Application
                 {
                     // TODO: Register your services
                     services.AddSingleton<IMyService, MyService>();
-                    services.AddSingleton<ILoadImagesServices, LoadImagesService>();
                     services.AddSingleton<LoadImagesBackgroundworker> ();
                     services.AddSingleton<LoadGraphDataBackgroundworker>();
                     services.AddTransient<KioskViewModel>();
@@ -79,9 +78,10 @@ public partial class App : Application
         MainWindow.EnableHotReload();
 #endif
         MainWindow.SetWindowIcon();
-       
-        MainWindow.AppWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
 
+#if !DEBUG
+        MainWindow.AppWindow.SetPresenter(AppWindowPresenterKind.FullScreen);
+#endif
 
         Host = await builder.NavigateAsync<Shell>();
     }
@@ -90,18 +90,14 @@ public partial class App : Application
     {
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),
-            new ViewMap<MainPage, MainViewModel>(),
             new ViewMap<SettingsPage, SettingsViewModel>(),
-            new ViewMap<KioskPage, KioskViewModel>(),
-            new DataViewMap<SecondPage, SecondViewModel, Entity>()
+            new ViewMap<KioskPage, KioskViewModel>()
         );
 
         routes.Register(
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested:
                 [
-                    new ("Main", View: views.FindByViewModel<MainViewModel>()),
-                    new ("Second", View: views.FindByViewModel<SecondViewModel>()),
                     new ("Settings", View: views.FindByViewModel<SettingsViewModel>()),
                     new ("Kiosk", View: views.FindByViewModel<KioskViewModel>())
                 ]

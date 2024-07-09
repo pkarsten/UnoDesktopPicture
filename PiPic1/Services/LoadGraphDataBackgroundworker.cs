@@ -2,12 +2,13 @@ using MSGraph;
 using MSGraph.Response;
 using System.ComponentModel;
 using System.Timers;
+using PiPic1.Helpers;
 
 namespace PiPic1.Services;
 public sealed class LoadGraphDataBackgroundworker
 {
     #region Fields
-    private readonly System.Timers.Timer _timer;
+    private System.Timers.Timer _timer;
     private readonly BackgroundWorker _backgroundWorker;
     private bool _isRunning;
     int _progress = 0;
@@ -36,15 +37,20 @@ public sealed class LoadGraphDataBackgroundworker
         _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
         _backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
 
-        // Initialize Timer
-        //_timer = new Timer(5000); // Set interval to 5 seconds
-        //TODO:PK Get Interval from Database
-        _timer = new System.Timers.Timer(60000); // Set interval to 1 seconds
-        _timer.Elapsed += Timer_Elapsed;
+        InitializeTimer();
     }
     #endregion
 
     #region Events
+    private async void InitializeTimer()
+    {
+        // Initialize Timer
+        //_timer = new System.Timers.Timer(5000); // Set interval to 5 seconds, 60 seconds = 60000
+        var minutesinterval = await GetIntervalForTimer();
+        _timer = new System.Timers.Timer(minutesinterval * 60000); 
+        _timer.Elapsed += Timer_Elapsed;
+    }
+    
     private void Timer_Elapsed(object sender, ElapsedEventArgs e)
     {
         StartImmediateTask();
@@ -137,9 +143,6 @@ public sealed class LoadGraphDataBackgroundworker
     //
     private async Task LoadCalendarEventsAndTasks()
     {
-        if ((_cancelRequested == false) && (_progress < 100))
-        {
-        }
         try
         {
             //// Initialize Graph client
@@ -222,18 +225,30 @@ public sealed class LoadGraphDataBackgroundworker
             }
             catch (Exception ex)
             {
-                await DAL.AppDataBase.SaveLogEntry(LogType.Error, "Exception  in LoadImageListFromOneDrive() " + ex.Message);
+                await DAL.AppDataBase.SaveLogEntry(LogType.Error, "Exception  in LoadCalendarEventsAndTasks() " + ex.Message);
             }
             _progress = 100;
             StatusUpdated?.Invoke(this, _progress.ToString());
         }
         catch (Exception ex)
         {
-            await DAL.AppDataBase.SaveLogEntry(LogType.Error, "Exception  in LoadImageListFromOneDrive() " + ex.Message);
+            await DAL.AppDataBase.SaveLogEntry(LogType.Error, "Exception  in LoadCalendarEventsAndTasks() " + ex.Message);
         }
         finally
         {
         }
+    }
+    #endregion
+
+    #region Functions
+    private async Task<double> GetIntervalForTimer()
+    {
+        var s = await DAL.AppDataBase.GetSetup();
+        if (s != null)
+        {
+            return s.IntervalForLoadCalendarAndTasksInterval;
+        }
+        else { return AppConstants.InitialSetupConfig.IntervalForLoadCalendarAndTasksInterval; }
     }
     #endregion
 }

@@ -45,9 +45,6 @@
   <ItemGroup>
     <None Remove="Assets\Icons\icon_foreground.svg" />
     <None Remove="Assets\Icons\settings.svg" />
-    <None Remove="Assets\Images\IMG_0135.JPG" />
-    <None Remove="Controls\ClockControl.xaml" />
-    <None Remove="Controls\InfoBox.xaml" />
     <None Remove="Presentation\KioskPage.xaml" />
     <None Remove="Presentation\Settings.xaml" />
     <None Remove="Styles\Button.xaml" />
@@ -113,12 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Styles\TextBox.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Controls\ClockControl.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Controls\InfoBox.xaml" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Presentation\KioskPage.xaml" />

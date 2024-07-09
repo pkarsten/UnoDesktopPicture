@@ -13,8 +13,6 @@ public class ShellViewModel
 
     public async Task Start()
     {
-        //await _navigator.NavigateViewModelAsync<MainViewModel>(this);
-        //await _navigator.NavigateViewModelAsync<SettingsViewModel>(this);
         await _navigator.NavigateViewModelAsync<KioskViewModel>(this, Qualifiers.ClearBackStack);
         //await _navigator.NavigateViewModelAsync<SettingsViewModel>(this, Qualifiers.ClearBackStack);
     }

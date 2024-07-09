@@ -188,7 +188,9 @@ public class DAL
                 await Database.InsertAsync(initPicFilter);
             }
         }
-        catch (Exception ex) { }
+        catch (Exception ex) {
+            await SaveLogEntry(LogType.Error,ex.Message);
+        }
     }
 
     /// <summary>
@@ -257,7 +259,7 @@ public class DAL
 
     public async void UpdateAllPicStatus()
     {
-            Database.QueryAsync<FavoritePic>("UPDATE FavoritePic SET Status=?", "");
+            await Database.QueryAsync<FavoritePic>("UPDATE FavoritePic SET Status=?", "");
             await SaveLogEntry(LogType.Info, "Set Favorite Pics status = empty");
 
     }
@@ -307,7 +309,7 @@ public class DAL
              m = Database.Table<FavoritePic>().Where(i => i.Id == Id).FirstOrDefaultAsync().Result;
 
         }
-        catch (Exception ex) { }
+        catch (Exception ex) { SaveLogEntry(LogType.Error, ex.Message); }
 
         return m;
     }
@@ -378,7 +380,7 @@ public class DAL
     }
     public IList<CalendarEvent> GetNextEvents()
     {
-        IList<CalendarEvent> models =null;
+        IList<CalendarEvent> models = null;
 
         try
         {

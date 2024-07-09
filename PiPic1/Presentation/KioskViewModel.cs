@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PiPic1.Helpers;
@@ -9,6 +10,8 @@ namespace PiPic1.Presentation;
 
 public partial class KioskViewModel : ObservableObject
 {
+    #region Fields and Properties
+    private static DispatcherTimer? pictimer;
     private INavigator _navigator;
     protected IMyService MessageService { get; }
     private BitmapImage? _dashImage;
@@ -148,10 +151,13 @@ public partial class KioskViewModel : ObservableObject
         }
     }
 
-    private readonly LoadGraphDataBackgroundworker _backgroundWorkerService;
+    private readonly LoadGraphDataBackgroundworker _graphDataWorkerService;
+    private readonly LoadImagesBackgroundworker _imagesWorkerService;
 
+    #endregion
 
-    public KioskViewModel(INavigator navigator, IMyService myservice, LoadGraphDataBackgroundworker backgroundWorkerService)
+    #region Constructor
+    public KioskViewModel(INavigator navigator, IMyService myservice, LoadGraphDataBackgroundworker backgroundWorkerService, LoadImagesBackgroundworker imgService)
     {
         _navigator = navigator;
         MessageService = myservice;
@@ -165,10 +171,15 @@ public partial class KioskViewModel : ObservableObject
         {
             LoadData();
         });
-        _backgroundWorkerService = backgroundWorkerService;
-        _backgroundWorkerService.StatusUpdated += OnStatusUpdated;
-        _backgroundWorkerService.TaskCompleted += LoadGraphDataTaskCompleted;
+        _graphDataWorkerService = backgroundWorkerService;
+        _graphDataWorkerService.StatusUpdated += OnStatusUpdated;
+        _graphDataWorkerService.TaskCompleted += LoadGraphDataTaskCompleted;
+
+        _imagesWorkerService = imgService;
+        _imagesWorkerService.StatusUpdated += OnImgWorkerStatusUpdated;
+        _imagesWorkerService.TaskCompleted += OnImgWorkerTaskCompleted;
     }
+    #endregion
     /// <summary>
     /// Load Initial Settings /Setup Data for the ViewModel
     /// </summary>
@@ -180,7 +191,7 @@ public partial class KioskViewModel : ObservableObject
             await LoadCalendarEvents();
             await LoadPurchTask();
             await LoadDatabaseInfos();
-            _backgroundWorkerService.Start();
+            await StartBackgroundTask();
             var s = await DAL.AppDataBase.GetSetup();
             if (s != null)
             {
@@ -192,49 +203,17 @@ public partial class KioskViewModel : ObservableObject
             }
             await CheckClockStatus(s);
 
-            if (s.IntervalForDiashow < 60) { s.IntervalForDiashow = 60; };
-            //Timing.StartTimer(0, s.IntervalForDiashow, async () => await this.UpdateDashBoardImageAsync());
-            Timing.StartTimer(0, 30, async () => await this.UpdateDashBoardImageAsync());
+            if (s.IntervalForDiashow < 30) { s.IntervalForDiashow = 30; };
+            StartPicChangeTimer(0, s.IntervalForDiashow, async () => await this.UpdateDashBoardImageAsync());
             ShowTasks = !s.EnablePurchaseTask;
             ShowTodayEvents = !s.EnableTodayEvents;
             ShowNextEvents = !s.EnableCalendarNextEvents;
             ShowCalendarAddOn = !s.EnableCalendarAddon;
-
-
-            //Friends = new ObservableCollection<WorkplaceFriend>();
-            _random = new Random();
-
-            // Adds friend connection data to collection
-            AddWorkplaceFriend("Luke", "Software Engineer");
-            AddWorkplaceFriend("Josh", "Mechanical Engineer");
-            AddWorkplaceFriend("Scarlett", "Architect");
-            AddWorkplaceFriend("Hampton", "Manager");
-            AddWorkplaceFriend("Tommie", "Software Engineer");
-            AddWorkplaceFriend("Ash", "Firefighter");
-            
+           
             UpdateUI();
         }
-        catch (Exception ex) { }
+        catch (Exception ex) { throw new Exception(ex.Message); }
     }
-
-    #region WorkplaceFriend
-    private Random _random;
-    private ObservableCollection<WorkplaceFriend> _friends = new ObservableCollection<WorkplaceFriend>();
-    public ObservableCollection<WorkplaceFriend> Friends
-    {
-        get { return this._friends; }
-        set { this.SetProperty(ref this._friends, value); }
-    }
-    private void AddWorkplaceFriend(string name, string occupation)
-    {
-        Friends.Add(new WorkplaceFriend()
-        {
-            Name = name,
-            Occupation = occupation,
-            Id = _random.Next(999999)   // Generate a random Id for visualization purposes
-        });
-    }
-    #endregion
 
     #region Clock
     private async Task CheckClockStatus(Setup setup)
@@ -274,6 +253,30 @@ public partial class KioskViewModel : ObservableObject
     }
     #endregion
 
+    #region Timer
+    /// <summary>
+    /// Starts a timer to perform the specified action at the specified interval.
+    /// </summary>
+    /// <param name="intervalInMinutes">The interval.</param>
+    /// <param name="action">The action.</param>
+    public static void StartPicChangeTimer(int intervalInMinutes, int intervalInSeconds, Action action)
+    {
+        if(pictimer != null)
+        {
+            pictimer.Stop();
+        }
+        pictimer = new DispatcherTimer();
+        pictimer.Interval = new TimeSpan(0, intervalInMinutes, intervalInSeconds);
+        pictimer.Tick += (s, e) => action();
+        pictimer.Start();
+    }
+
+    private static async Task StopPicChangeTimer()
+    {
+        pictimer.Stop();
+    }
+    #endregion
+
     #region Calendar Events
     private async Task LoadCalendarEvents()
     {
@@ -303,6 +306,7 @@ public partial class KioskViewModel : ObservableObject
         }
     }
     #endregion
+
     #region ToDoTasks
     private async Task LoadPurchTask()
     {
@@ -388,6 +392,9 @@ public partial class KioskViewModel : ObservableObject
     private async Task OnNavigateToSettingsPage()
     {
         await StopClock();
+        await StopPicChangeTimer();
+        _graphDataWorkerService.Stop();
+        _imagesWorkerService.Stop();
         await _navigator.NavigateRouteForResultAsync(this, "Settings", "");
     }
 
@@ -395,12 +402,14 @@ public partial class KioskViewModel : ObservableObject
     private string? _taskResult;
     public async Task StartBackgroundTask()
     {
-        _backgroundWorkerService.Start();
+        _graphDataWorkerService.Start();
+        _imagesWorkerService.Start();
     }
 
     public async Task CancelBackgroundTask()
     {
-        _backgroundWorkerService.Stop();
+        _graphDataWorkerService.Stop();
+        _imagesWorkerService.Stop();
     }
     private async void OnStatusUpdated(object sender, string status)
     {
@@ -413,12 +422,30 @@ public partial class KioskViewModel : ObservableObject
             await LoadPurchTask();
         }
         UpdateUI();
-        System.Diagnostics.Debug.WriteLine("Status : " + status + " % geladen");
+        System.Diagnostics.Debug.WriteLine("Load Graph Data Status : " + status + " % geladen");
     }
 
     private async void LoadGraphDataTaskCompleted(object sender, string taskStatus)
     {
         System.Diagnostics.Debug.WriteLine("LoadGraphDataTaskCompleted , Result" + taskStatus);
+        UpdateUI();
+    }
+
+    private async void OnImgWorkerStatusUpdated(object sender, string status)
+    {
+        //TaskProgressString = status + " % geladen";//Needed for show progress on UI
+        if (status == "100")
+        {
+            //_backgroundWorkerService.Stop();
+            _taskResult = "New Image List Loaded";
+        }
+        UpdateUI();
+        System.Diagnostics.Debug.WriteLine("OnImgWorkerStatusUpdated Status : " + status + " % geladen");
+    }
+
+    private async void OnImgWorkerTaskCompleted(object sender, string taskStatus)
+    {
+        System.Diagnostics.Debug.WriteLine("Image List Loaded Completed , Result" + taskStatus);
         UpdateUI();
     }
     #endregion

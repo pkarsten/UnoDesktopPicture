@@ -61,18 +61,16 @@ public partial class GraphService
 
     private static string MSGraphURL = "https://graph.microsoft.com/v1.0/";
     private static AuthenticationResult authResult;
-    private static IAccount _currentUserAccount;
+    private static IAccount? _currentUserAccount;
 
     #region need this ? 
     //Hello Graph
     private static readonly string graphEndpoint = "https://graph.microsoft.com/";
     private static readonly string graphVersion = "beta/me";//"v1.0/me"; //beta
                                                             // UIParent used by Android version of the app
-    public static object AuthenticationUIParent { get; private set; }
-
 
     private readonly string accessToken = string.Empty;
-    private HttpClient httpClient = null;
+    private HttpClient? httpClient = null;
     private readonly JsonSerializerSettings jsonSettings =
         new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
@@ -126,11 +124,7 @@ public partial class GraphService
     /// <returns>AuthenticationResult</returns>
     public static async Task<AuthenticationResult> GetAuthResult()
     {
-
-        IEnumerable<IAccount> accounts = await PublicClientApp.GetAccountsAsync();
-        IAccount firstAccount = accounts.FirstOrDefault();
-        return await PublicClientApp.AcquireTokenSilent(Scopes, firstAccount).ExecuteAsync();
-        //return authResult;
+        return authResult;
     }
 
     /// <summary>
@@ -153,7 +147,6 @@ public partial class GraphService
     /// <summary>
     /// Signs in the user and obtains an Access token for MS Graph
     /// </summary>
-    /// <param name="scopes"></param>
     /// <returns> Access Token</returns>
     public static async Task<AuthenticationResult> SignInUserAndGetTokenUsingMSAL()
     {
@@ -296,7 +289,7 @@ if (App.AuthenticationUiParent != null)
     public async Task<ItemInfoResponse> GetPhotosAndImagesFromFolder(string path)
     {
         //https://docs.microsoft.com/en-us/graph/api/resources/onedrive?view=graph-rest-1.0
-        ///me/drive/root:/path/to/folder
+        //me/drive/root:/path/to/folder
         //e.g. https://graph.microsoft.com/beta/me/drive/root:/Bilder/WindowsIoTApp   path="/Bilder/WindowsIotApp"
         var response = await MakeGraphCall(HttpMethod.Get, $"/drive/root:{path}");
         var sf = JsonConvert.DeserializeObject<ItemInfoResponse>(await response.Content.ReadAsStringAsync());

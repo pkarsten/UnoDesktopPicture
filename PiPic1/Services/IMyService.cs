@@ -12,7 +12,6 @@ public interface IMyService
     Task<DashBoardImage> StreamImageFromOneDrive();
 
     Task<IList<TaskFolder>> GetTaskFolderFromGraph();
-    Task<ObservableCollection<TaskFolder>> GetTaskFolderFromGraph1();
-    
+   
     Task LoadCalendarEventsAndTasks();
 }

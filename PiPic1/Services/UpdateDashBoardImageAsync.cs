@@ -6,7 +6,10 @@ using PiPic1.Helpers;
 
 namespace PiPic1.Services;
 
-public sealed class LoadImagesBackgroundworker
+/// <summary>
+/// Backgroundworker for Update Image on Dashboard
+/// </summary>
+public sealed class UpdateDashBoardImageBGWorker
 
 
 {
@@ -28,7 +31,7 @@ public sealed class LoadImagesBackgroundworker
     #endregion
 
     #region Constructor
-    public LoadImagesBackgroundworker()
+    public UpdateDashBoardImageBGWorker()
     {
         // Initialize BackgroundWorker
         _backgroundWorker = new BackgroundWorker

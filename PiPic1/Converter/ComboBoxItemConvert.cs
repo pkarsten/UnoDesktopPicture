@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Data;
 
 namespace PiPic1;
@@ -13,7 +8,7 @@ namespace PiPic1;
             return value;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public object? ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return value as MSGraph.Response.TaskFolder;
         }
@@ -26,7 +21,7 @@ namespace PiPic1;
             return value;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public object? ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return value as MSGraph.Response.TaskResponse;
         }
